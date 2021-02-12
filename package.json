@@ -1,0 +1,23 @@
+{
+  "name": "spl_parser",
+  "version": "1.0.0",
+  "description": "XML SPL Parser adapted from the original openfda parser",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CSCI-E-599/spl_parser.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CSCI-E-599/spl_parser/issues"
+  },
+  "homepage": "https://github.com/CSCI-E-599/spl_parser#readme",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.5",
+    "xml2json": "^0.12.0"
+  }
+}
