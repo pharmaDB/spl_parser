@@ -105,3 +105,4 @@ dist
 
 # Ignore TSC build dir
 /lib
+.idea/
