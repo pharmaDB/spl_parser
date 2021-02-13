@@ -13,10 +13,10 @@ interface OpenObject {
  *
  * @param elements
  */
-const toText = (elements: any) => {
-    let ret = '';
-    const len = elements.length;
-    let elem;
+const toText = (elements: any) : string => {
+    let ret: string = '';
+    const len: number = elements.length;
+    let elem: any;
 
     for (let i = 0; i < len; i++) {
       elem = elements[i];
@@ -37,17 +37,17 @@ const toText = (elements: any) => {
  */
 const parseSections = (sectionsFilepath: string): OpenObject => {
   // read the CSV and split it on line breaks
-  const csv = fs.readFileSync(sectionsFilepath, 'utf-8');
-  const csvSplit = csv.split('\n');
+  const csv: string = fs.readFileSync(sectionsFilepath, 'utf-8');
+  const csvSplit: string[] = csv.split('\n');
 
   // iterate through the CSV entries and map them to code keys
   const codeToName: OpenObject = {};
   csvSplit.forEach((item: any) => {
-    const csvLine = item.replace(/"/, '');
-    const row = csvLine.split(',');
+    const csvLine: string = item.replace(/"/, '');
+    const row: string[] = csvLine.split(',');
 
-    const code = row[0];
-    let nameForJSON = row[1].replace(/:/, '').replace(/ & /g, ' and ');
+    const code: string = row[0];
+    let nameForJSON: string = row[1].replace(/:/, '').replace(/ & /g, ' and ');
     nameForJSON = nameForJSON.replace(/\//, ' or ');
     nameForJSON = nameForJSON.replace(/ /g, '_').toLowerCase();
     nameForJSON = nameForJSON.replace(/spl_unclassified/, 'spl_unclassified_section');
@@ -65,12 +65,12 @@ const parseSections = (sectionsFilepath: string): OpenObject => {
  * @param jsonResponse: the in-work jsonResponse that represents the XML SPL doc but in JSON format
  * @param sectionsMap: mapping that defines which SPL REMS section definitions will be looked for while parsing the SPL
  */
-const populateSectionsFromXml = ($: cheerio.Root, jsonResponse: OpenObject, sectionsMap: OpenObject) => {
+const populateSectionsFromXml = ($: cheerio.Root, jsonResponse: OpenObject, sectionsMap: OpenObject) : void => {
   // load the xml into a JQuery for Node wrapper
   $('section').each((i, section) => {
-    let code = 'spl_unclassified_section';
+    let code: string = 'spl_unclassified_section';
 
-    const sectionCode = $(section).find('code').attr('code');
+    const sectionCode: string | undefined = $(section).find('code').attr('code');
     if (sectionCode) {
         const sectionName = sectionsMap[sectionCode];
         if (sectionName) {
@@ -81,20 +81,20 @@ const populateSectionsFromXml = ($: cheerio.Root, jsonResponse: OpenObject, sect
     // For sections like recent_major_changes which have statements broken apart by <br/>
     $('br').replaceWith(' ');
 
-    const isSubsection = $(section).parentsUntil($('section')).length === 1;
+    const isSubsection: boolean = $(section).parentsUntil($('section')).length === 1;
 
     // Only include subsections if they are classified. There's no reason to duplicate the text otherwise.
     if (!(code === 'spl_unclassified_section' && isSubsection)) {
       if (jsonResponse[code] === undefined) {
         jsonResponse[code] = [];
       }
-      const text = toText($(section)).trim().replace(/ +/gm, ' ');
+      const text: string = toText($(section)).trim().replace(/ +/gm, ' ');
       jsonResponse[code].push(text);
 
       $(section)
         .find('table')
         .each((j, table) => {
-          const codeTable = code + '_table';
+          const codeTable: string = code + '_table';
           if (jsonResponse[codeTable] === undefined) {
             jsonResponse[codeTable] = [];
           }
@@ -109,7 +109,7 @@ const populateSectionsFromXml = ($: cheerio.Root, jsonResponse: OpenObject, sect
  * @param $: A cheerio Root section object (ie XML document in a jQuery for Node wrapper)
  * @param jsonResponse: the in-work jsonResponse that represents the XML SPL doc but in JSON format
  */
-const populateMetaDataFromXml = ($: cheerio.Root, jsonResponse: OpenObject) => {
+const populateMetaDataFromXml = ($: cheerio.Root, jsonResponse: OpenObject) : void => {
         jsonResponse[`set_id`] = $('setId').attr('root');
         jsonResponse[`id`] = $('id').attr('root');
         jsonResponse[`effective_time`] = $('effectiveTime').attr('value');
@@ -120,12 +120,12 @@ const populateMetaDataFromXml = ($: cheerio.Root, jsonResponse: OpenObject) => {
  * Parse out a provided XML SPL string into JSON based on the categories provided in the sections CSV config
  * @param xmlSplString: A XML SPL document in string format. This could be a very large string.
  */
-export function parse(xmlSplString: string) {
+export function parse(xmlSplString: string) : OpenObject {
     const jsonResponse: OpenObject = {};
 
     // parse the sections configuration CSV and wrap the XML SPL doc in a jQuery wrapper
-    const sectionsMap = parseSections('./sections.csv');
-    const jQueryWrappedSPLDocumentRoot = cheerio.load(xmlSplString, {
+    const sectionsMap: OpenObject = parseSections('./sections.csv');
+    const jQueryWrappedSPLDocumentRoot: cheerio.Root = cheerio.load(xmlSplString, {
         normalizeWhitespace: true,
         xmlMode: true
     });
