@@ -1,6 +1,6 @@
 {
   "name": "spl_parser",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Simple one function tool to convert XML SPL to JSON",
   "main": "lib/index.js",
   "scripts": {
